@@ -1,0 +1,28 @@
+{
+    "name": "mleczek/xml",
+    "description": "Transform PHP object to XML",
+    "type": "library",
+    "keywords": ["php", "xml", "object", "transform", "convert"],
+    "homepage": "https://github.com/mleczek/xml",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Wojciech Mleczek",
+            "email": "mleczek.wojtek@gmail.com"
+        }
+    ],
+    "require-dev": {
+    	"phpunit/phpunit": "~5.7",
+        "mockery/mockery": "~0.9"
+    },
+    "autoload": {
+        "psr-4": {
+            "Mleczek\\Xml\\": "src/"
+        }
+    },
+    "psr-4": {
+        "autoload-dev": {
+            "Mleczek\\Xml\\Tests\\": "tests/"
+        }
+    }
+}
