@@ -27,13 +27,24 @@ class XmlConverter
     protected function build(XmlElement $root, $meta)
     {
         foreach ($meta as $name => $value) {
+            // Used to create self-closing tags or attributes without value,
+            // eq. ['dog' => ['@can_hau']] (equals ['dog' => [0 => '@can_hau']]).
+            //                                      is_int ---^
+            if(is_int($name)) {
+                $name = $value;
+                $value = null;
+            }
+
             // TODO: Name and value validation
 
             // Attribute
             if ($name[0] === '@') {
                 $name = substr($name, 1);
+
                 $value = $this->getValue($value);
                 $root->setAttribute($name, $value);
+
+                continue;
             }
 
             // Element
@@ -55,7 +66,11 @@ class XmlConverter
 
     protected function getValue($key)
     {
-        // TODO: Pattern validation
+        // If key is not string then return
+        // passed value (especially null).
+        if(!is_string($key)) {
+            return $key;
+        }
 
         // If string starts with "=" symbol
         // then cut it and return plain string.
@@ -63,7 +78,7 @@ class XmlConverter
             return substr($key, 1);
         }
 
-        return $this->object->{$key};
+        return $this->object->$key;
     }
 
     public function refresh()
@@ -86,6 +101,14 @@ class XmlConverter
 
         // Build XML from array metadata
         foreach ($data as $root => $meta) {
+            // Allow creating self-closing root element
+            // using ['dog'] (equals [0 => 'dog']) as well as ['dog' => []].
+            //              is_int ---^
+            if(is_int($root)) {
+                $root = $meta;
+                $meta = [];
+            }
+
             $root = new XmlElement($root);
             $this->xml = (string)$this->build($root, $meta);
         }

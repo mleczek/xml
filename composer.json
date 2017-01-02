@@ -20,8 +20,8 @@
             "Mleczek\\Xml\\": "src/"
         }
     },
-    "psr-4": {
-        "autoload-dev": {
+    "autoload-dev": {
+        "psr-4": {
             "Mleczek\\Xml\\Tests\\": "tests/"
         }
     }

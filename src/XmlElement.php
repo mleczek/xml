@@ -178,7 +178,7 @@ class XmlElement
     public function __toString()
     {
         $attributes = '';
-        foreach ($this->attributes as $name => $value) {
+        foreach ($this->getAttributes() as $name => $value) {
             if ($value === null) {
                 // Self-closing attribute format.
                 $attributes .= " $name";
@@ -190,16 +190,16 @@ class XmlElement
         }
 
         // Self-closing element format.
-        if ($this->text === null && count($this->children) == 0) {
-            return "<{$this->name} $attributes/>";
+        if ($this->getText() === null && count($this->getChildren()) == 0) {
+            return "<{$this->getName()}$attributes/>";
         }
 
         // Full element format.
         $children = '';
-        foreach ($this->children as $child) {
+        foreach ($this->getChildren() as $child) {
             $children .= (string)$child;
         }
 
-        return "<{$this->name} $attributes>{$this->text}$children</{$this->name}>";
+        return "<{$this->getName()}$attributes>{$this->getText()}$children</{$this->getName()}>";
     }
 }
