@@ -4,6 +4,8 @@
 namespace Mleczek\Xml;
 
 
+use Mleczek\Xml\Exceptions\InvalidXmlFormatException;
+
 class XmlElement
 {
     /**
@@ -150,11 +152,13 @@ class XmlElement
      * @param string $name
      * @param mixed $value
      * @return $this
+     * @throws InvalidXmlFormatException
      */
     public function setAttribute($name, $value)
     {
         if (!is_string($name)) {
-            throw new \InvalidArgumentException("Attribute name in XmlElement must be string.");
+            $type = typeof($name);
+            throw new InvalidXmlFormatException("Attribute name must be a string, $type given.");
         }
 
         $this->attributes[$name] = $value;

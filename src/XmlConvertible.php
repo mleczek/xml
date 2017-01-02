@@ -4,10 +4,10 @@
 namespace Mleczek\Xml;
 
 
-trait XmlTransformation
+trait XmlConvertible
 {
     public function toXml()
     {
-        return (string)(new XmlTransformer($this));
+        return (string)(new XmlConverter($this));
     }
 }

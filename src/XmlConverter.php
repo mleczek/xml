@@ -6,7 +6,7 @@ namespace Mleczek\Xml;
 
 use Mleczek\Xml\Exceptions\InvalidXmlFormatException;
 
-class XmlTransformer
+class XmlConverter
 {
     /**
      * @var Xmlable

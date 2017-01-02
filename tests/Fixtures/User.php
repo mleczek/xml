@@ -5,11 +5,11 @@ namespace Mleczek\Xml\Tests\Fixtures;
 
 
 use Mleczek\Xml\Xmlable;
-use Mleczek\Xml\XmlTransformation;
+use Mleczek\Xml\XmlConvertible;
 
 class User implements Xmlable
 {
-    use XmlTransformation;
+    use XmlConvertible;
 
     public $id = 5;
     public $first_name = 'John';
