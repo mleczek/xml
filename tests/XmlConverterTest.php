@@ -6,6 +6,7 @@ namespace Mleczek\Xml\Tests;
 
 use Mleczek\Xml\Xmlable;
 use Mleczek\Xml\XmlConverter;
+use Mleczek\Xml\XmlElement;
 use PHPUnit\Framework\TestCase;
 
 class XmlConverterTestCase extends TestCase
@@ -19,7 +20,12 @@ class XmlConverterTestCase extends TestCase
             'string format' => [
                 [],
                 '<dog id="5"/>',
-                '<dog id="5"/>'
+                '<dog id="5"/>',
+            ],
+            'XmlElement' => [
+                [],
+                '<dog/>',
+                new XmlElement('dog'),
             ],
             'self-closing root' => [
                 [],
