@@ -40,12 +40,14 @@ class Dog implements Xmlable
 
 The [XML body](#xml-body) will be described in the next chapter.
 
-Class may be converted to XML using `Mleczek\Xml\XmlConverter` which implements the `__toString` method returning XML as string:
+Class may be converted to XML using `Mleczek\Xml\XmlConverter` which implements the `__toString`, `outerXml` and `innerXml` methods returning XML as string:
 
 ```php
 $dog = new Dog();
 $converter = new XmlConverter($dog);
 $xml = (string)$converter;
+// $xml = $converter->outerXml(); // equals __toString
+// $xml = $converter->innerXml();
 ```
 
 Library contains also the shorthand to cast `Mleczek\Xml\Xmlable` class to XML string using `Mleczek\Xml\XmlConvertible` trait:
@@ -65,7 +67,7 @@ class Dog implements Xmlable
 }
 ```
 
-`Mleczek\Xml\XmlConvertible` implements the `toXml` method which returns the XML string:
+`Mleczek\Xml\XmlConvertible` implements the `toXml` method which returns the outer XML string:
 
 ```php
 $dog = new Dog();
@@ -115,7 +117,9 @@ public function xml()
 }
 ```
 
-As you can see above if you define value equal `full_name` then `XmlConverter` will look for `full_name` property in the object. You can also define more elements, self-closing elements and constant values:
+As you can see above if you define value equal `full_name` then **`XmlConverter` will look for `full_name` property in the object**. In case `full_name` property return the instance of an object implementing `Xmlable` interface then it will be converted to XML string.
+
+You can also define more elements, self-closing elements and **constant values**:
 
 ```php
 public function xml()

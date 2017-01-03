@@ -177,7 +177,17 @@ class XmlElement
         return $this;
     }
 
-    public function __toString()
+    public function innerXml()
+    {
+        $children = '';
+        foreach ($this->getChildren() as $child) {
+            $children .= (string)$child;
+        }
+
+        return $this->getText() . $children;
+    }
+
+    public function outerXml()
     {
         $attributes = '';
         foreach ($this->getAttributes() as $name => $value) {
@@ -197,11 +207,11 @@ class XmlElement
         }
 
         // Full element format.
-        $children = '';
-        foreach ($this->getChildren() as $child) {
-            $children .= (string)$child;
-        }
+        return "<{$this->getName()}$attributes>{$this->innerXml()}</{$this->getName()}>";
+    }
 
-        return "<{$this->getName()}$attributes>{$this->getText()}$children</{$this->getName()}>";
+    public function __toString()
+    {
+        return $this->outerXml();
     }
 }

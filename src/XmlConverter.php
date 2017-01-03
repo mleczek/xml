@@ -30,7 +30,7 @@ class XmlConverter
             // Used to create self-closing tags or attributes without value,
             // eq. ['dog' => ['@can_hau']] (equals ['dog' => [0 => '@can_hau']]).
             //                                      is_int ---^
-            if(is_int($name)) {
+            if (is_int($name)) {
                 $name = $value;
                 $value = null;
             }
@@ -66,19 +66,25 @@ class XmlConverter
 
     protected function getValue($key)
     {
-        // If key is not string then return
-        // passed value (especially null).
-        if(!is_string($key)) {
-            return $key;
+        $value = $key;
+
+        if (is_string($value)) {
+            if ($key[0] === '=') {
+                // If string starts with "=" symbol
+                // then cut it and return plain string.
+                $value = substr($key, 1);
+            } else {
+                // Get value using an object property
+                $value = $this->object->$key;
+            }
         }
 
-        // If string starts with "=" symbol
-        // then cut it and return plain string.
-        if ($key[0] === '=') {
-            return substr($key, 1);
+        // Convert Xmlable to XML string
+        if ($value instanceof Xmlable) {
+            $value = (string)(new XmlConverter($value));
         }
 
-        return $this->object->$key;
+        return $value;
     }
 
     public function refresh()
@@ -100,18 +106,8 @@ class XmlConverter
         }
 
         // Build XML from array metadata
-        foreach ($data as $root => $meta) {
-            // Allow creating self-closing root element
-            // using ['dog'] (equals [0 => 'dog']) as well as ['dog' => []].
-            //              is_int ---^
-            if(is_int($root)) {
-                $root = $meta;
-                $meta = [];
-            }
-
-            $root = new XmlElement($root);
-            $this->xml = (string)$this->build($root, $meta);
-        }
+        $root = new XmlElement('XmlConverter');
+        $this->xml = $this->build($root, $data)->innerXml();
     }
 
     public function __toString()
