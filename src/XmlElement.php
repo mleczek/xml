@@ -8,6 +8,8 @@ use Mleczek\Xml\Exceptions\InvalidXmlFormatException;
 
 class XmlElement
 {
+    const XmlDeclaration = '<?xml version="1.0" encoding="UTF-8"?>';
+
     /**
      * @var string
      */
