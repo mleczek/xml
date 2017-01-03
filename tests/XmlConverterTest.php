@@ -110,6 +110,18 @@ class XmlConverterTestCase extends TestCase
                         ]
                     ]
                 ]
+            ],
+            'xmlable property' => [
+                [
+                    'mock' => \Mockery::mock(Xmlable::class)
+                        ->shouldReceive('xml')
+                        ->andReturn('<mock/>')
+                        ->getMock(),
+                ],
+                '<test><mock/></test>',
+                [
+                    'test' => 'mock',
+                ],
             ]
         ];
     }
