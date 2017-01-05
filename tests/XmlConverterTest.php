@@ -4,6 +4,7 @@
 namespace Mleczek\Xml\Tests;
 
 
+use Mleczek\Xml\Exceptions\InvalidXmlFormatException;
 use Mleczek\Xml\Xmlable;
 use Mleczek\Xml\XmlConverter;
 use Mleczek\Xml\XmlElement;
@@ -12,7 +13,7 @@ use PHPUnit\Framework\TestCase;
 class XmlConverterTestCase extends TestCase
 {
     /**
-     * @return array [properties, expected, xml_meta]
+     * @return array [properties, xml, expected]
      */
     public function xmlProvider()
     {
@@ -24,84 +25,83 @@ class XmlConverterTestCase extends TestCase
             ],
             'XmlElement' => [
                 [],
-                '<dog/>',
                 new XmlElement('dog'),
+                '<dog/>',
             ],
             'self-closing root' => [
                 [],
-                '<dog/>',
                 ['dog'],
+                '<dog/>',
             ],
             'self-closing root #2' => [
                 [],
-                '<dog/>',
                 ['dog' => []],
+                '<dog/>',
             ],
             'const attribute' => [
                 [],
-                '<dog type="animal"/>',
                 [
                     'dog' => [
                         '@type' => '=animal',
                     ]
                 ],
+                '<dog type="animal"/>',
             ],
             'attribute without value' => [
                 [],
-                '<dog hau cantMiau/>',
                 [
                     'dog' => [
                         '@hau',
                         '@cantMiau' => null,
                     ],
                 ],
+                '<dog hau cantMiau/>',
             ],
             'attribute without value #2' => [
                 [],
-                '<dog hau/>',
                 [
                     'dog' => [
                         '@hau' => null
                     ],
                 ],
+                '<dog hau/>',
             ],
             'dynamic attribute' => [
                 [
                     'no' => 5,
                 ],
-                '<dog id="{no}"/>',
                 [
                     'dog' => [
                         '@id' => 'no',
                     ]
                 ],
+                '<dog id="{no}"/>',
             ],
             'self-closing sub-element' => [
                 [],
-                '<dog><hau/></dog>',
                 [
                     'dog' => ['hau'],
-                ]
+                ],
+                '<dog><hau/></dog>',
             ],
             'attribute and sub-element' => [
                 [
                     'id' => 5,
                     'name' => 'hau',
                 ],
-                '<dog id="{id}"><name>{name}</name></dog>',
                 [
                     'dog' => [
                         '@id' => 'id',
                         'name' => 'name',
                     ]
                 ],
+                '<dog id="{id}"><name>{name}</name></dog>',
             ],
             'nested sub-elements' => [
                 [
                     'first_name' => 'John',
                     'last_name' => 'Smith',
                 ],
-                '<person><name><first>{first_name}</first><last>{last_name}</last></name></person>',
                 [
                     'person' => [
                         'name' => [
@@ -109,7 +109,8 @@ class XmlConverterTestCase extends TestCase
                             'last' => 'last_name',
                         ]
                     ]
-                ]
+                ],
+                '<person><name><first>{first_name}</first><last>{last_name}</last></name></person>',
             ],
             'xmlable property' => [
                 [
@@ -118,10 +119,10 @@ class XmlConverterTestCase extends TestCase
                         ->andReturn('<mock/>')
                         ->getMock(),
                 ],
-                '<test><mock/></test>',
                 [
                     'test' => 'mock',
                 ],
+                '<test><mock/></test>',
             ]
         ];
     }
@@ -129,10 +130,10 @@ class XmlConverterTestCase extends TestCase
     /**
      * @dataProvider xmlProvider
      */
-    public function testArrayXml($properties, $expected, $xml_meta)
+    public function testArrayXml($properties, $xml, $expected)
     {
-        $xmlable = \Mockery::mock(Xmlable::class);
-        $xmlable->shouldReceive('xml')->andReturn($xml_meta);
+        $xmlable = $this->createMock(Xmlable::class);
+        $xmlable->method('xml')->willReturn($xml);
 
         foreach ($properties as $name => $value) {
             $xmlable->{$name} = $value;
@@ -141,5 +142,14 @@ class XmlConverterTestCase extends TestCase
 
         $converter = new XmlConverter($xmlable);
         $this->assertEquals($expected, (string)$converter);
+    }
+
+    public function testInvalidXmlFormat()
+    {
+        $xmlable = $this->createMock(Xmlable::class);
+        $xmlable->method('xml')->willReturn(null);
+
+        $this->expectException(InvalidXmlFormatException::class);
+        new XmlConverter($xmlable);
     }
 }
