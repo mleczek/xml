@@ -23,21 +23,25 @@ class XmlConverterTestCase extends TestCase
                 '<dog id="5"/>',
                 '<dog id="5"/>',
             ],
+
             'XmlElement' => [
                 [],
                 new XmlElement('dog'),
                 '<dog/>',
             ],
+
             'self-closing root' => [
                 [],
                 ['dog'],
                 '<dog/>',
             ],
+
             'self-closing root #2' => [
                 [],
                 ['dog' => []],
                 '<dog/>',
             ],
+
             'const attribute' => [
                 [],
                 [
@@ -47,6 +51,7 @@ class XmlConverterTestCase extends TestCase
                 ],
                 '<dog type="animal"/>',
             ],
+
             'attribute without value' => [
                 [],
                 [
@@ -57,6 +62,7 @@ class XmlConverterTestCase extends TestCase
                 ],
                 '<dog hau cantMiau/>',
             ],
+
             'attribute without value #2' => [
                 [],
                 [
@@ -66,6 +72,7 @@ class XmlConverterTestCase extends TestCase
                 ],
                 '<dog hau/>',
             ],
+
             'dynamic attribute' => [
                 [
                     'no' => 5,
@@ -77,6 +84,7 @@ class XmlConverterTestCase extends TestCase
                 ],
                 '<dog id="{no}"/>',
             ],
+
             'self-closing sub-element' => [
                 [],
                 [
@@ -84,6 +92,7 @@ class XmlConverterTestCase extends TestCase
                 ],
                 '<dog><hau/></dog>',
             ],
+
             'attribute and sub-element' => [
                 [
                     'id' => 5,
@@ -97,6 +106,7 @@ class XmlConverterTestCase extends TestCase
                 ],
                 '<dog id="{id}"><name>{name}</name></dog>',
             ],
+
             'nested sub-elements' => [
                 [
                     'first_name' => 'John',
@@ -112,6 +122,7 @@ class XmlConverterTestCase extends TestCase
                 ],
                 '<person><name><first>{first_name}</first><last>{last_name}</last></name></person>',
             ],
+
             'xmlable property' => [
                 [
                     'mock' => \Mockery::mock(Xmlable::class)
@@ -121,6 +132,19 @@ class XmlConverterTestCase extends TestCase
                 ],
                 [
                     'test' => 'mock',
+                ],
+                '<test><mock/></test>',
+            ],
+
+            'xmlable property #2' => [
+                [],
+                [
+                    'test' => [
+                        \Mockery::mock(Xmlable::class)
+                            ->shouldReceive('xml')
+                            ->andReturn('<mock/>')
+                            ->getMock(),
+                    ]
                 ],
                 '<test><mock/></test>',
             ]
@@ -137,7 +161,7 @@ class XmlConverterTestCase extends TestCase
 
         foreach ($properties as $name => $value) {
             $xmlable->{$name} = $value;
-            $expected = str_replace('{'.$name.'}', $value, $expected);
+            $expected = str_replace('{' . $name . '}', $value, $expected);
         }
 
         $converter = new XmlConverter($xmlable);

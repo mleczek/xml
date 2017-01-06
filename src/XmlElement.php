@@ -6,7 +6,7 @@ namespace Mleczek\Xml;
 
 use Mleczek\Xml\Exceptions\InvalidXmlFormatException;
 
-class XmlElement
+class XmlElement implements Xmlable
 {
     const XmlDeclaration = '<?xml version="1.0" encoding="UTF-8"?>';
 
@@ -208,6 +208,11 @@ class XmlElement
 
         // Full element format.
         return "<{$this->getName()}$attributes>{$this->innerXml()}</{$this->getName()}>";
+    }
+
+    public function xml()
+    {
+        return $this->outerXml();
     }
 
     public function __toString()
