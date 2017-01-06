@@ -117,7 +117,7 @@ public function xml()
 }
 ```
 
-As you can see above if you define value equal `full_name` then **`XmlConverter` will look for `full_name` property in the object**. In case `full_name` property return the instance of an object implementing `Xmlable` interface then it will be converted to XML string.
+As you can see above if you define value equal `full_name` then **`XmlConverter` will look for `full_name` property in the object**.
 
 You can also define more elements, self-closing elements and **constant values**:
 
