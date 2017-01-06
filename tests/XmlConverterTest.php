@@ -15,7 +15,7 @@ class XmlConverterTestCase extends TestCase
     /**
      * @return array [properties, xml, expected]
      */
-    public function xmlProvider()
+    public function validXmlProvider()
     {
         return [
             'string format' => [
@@ -124,19 +124,6 @@ class XmlConverterTestCase extends TestCase
             ],
 
             'xmlable property' => [
-                [
-                    'mock' => \Mockery::mock(Xmlable::class)
-                        ->shouldReceive('xml')
-                        ->andReturn('<mock/>')
-                        ->getMock(),
-                ],
-                [
-                    'test' => 'mock',
-                ],
-                '<test><mock/></test>',
-            ],
-
-            'xmlable property #2' => [
                 [],
                 [
                     'test' => [
@@ -147,14 +134,78 @@ class XmlConverterTestCase extends TestCase
                     ]
                 ],
                 '<test><mock/></test>',
-            ]
+            ],
+
+            'merging arrays' => [
+                [],
+                [
+                    'test' => [
+                        '@attr_1',
+                        ['@attr_2'],
+                    ]
+                ],
+                '<test attr_1 attr_2/>'
+            ],
+
+            'boolean value' => [
+                [],
+                [
+                    'test' => [
+                        'no' => false,
+                        'yes' => true,
+                        '@no' => false,
+                        '@yes' => true,
+                    ]
+                ],
+                '<test yes><yes/></test>'
+            ],
         ];
     }
 
     /**
-     * @dataProvider xmlProvider
+     * @return array [properties, xml, exception]
      */
-    public function testArrayXml($properties, $xml, $expected)
+    public function invalidXmlProvider()
+    {
+        return [
+            'invalid xml type' => [
+                [],
+                null,
+                InvalidXmlFormatException::class,
+            ],
+
+            'invalid key type' => [
+                [],
+                [null],
+                InvalidXmlFormatException::class,
+            ],
+
+            'invalid attr value' => [
+                [],
+                [
+                    'test' => [
+                        '@test' => 0.5
+                    ]
+                ],
+                InvalidXmlFormatException::class,
+            ],
+
+            'invalid node value' => [
+                [],
+                [
+                    'test' => [
+                        'test' => 0.5
+                    ]
+                ],
+                InvalidXmlFormatException::class,
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider validXmlProvider
+     */
+    public function testValidXml($properties, $xml, $expected)
     {
         $xmlable = $this->createMock(Xmlable::class);
         $xmlable->method('xml')->willReturn($xml);
@@ -166,6 +217,23 @@ class XmlConverterTestCase extends TestCase
 
         $converter = new XmlConverter($xmlable);
         $this->assertEquals($expected, (string)$converter);
+    }
+
+    /**
+     * @dataProvider invalidXmlProvider
+     */
+    public function testInvalidXml($properties, $xml, $exception)
+    {
+        $xmlable = $this->createMock(Xmlable::class);
+        $xmlable->method('xml')->willReturn($xml);
+
+        foreach ($properties as $name => $value) {
+            $xmlable->{$name} = $value;
+            $expected = str_replace('{' . $name . '}', $value, $expected);
+        }
+
+        $this->expectException($exception);
+        $converter = new XmlConverter($xmlable);
     }
 
     public function testInvalidXmlFormat()

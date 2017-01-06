@@ -109,9 +109,13 @@ class XmlConverter
     protected function buildAttrFor(XmlElement $root, $attr_name, $value)
     {
         // 1. string: constant or property value
-        // 2. null: attribute without name
-        if(is_string($value) || is_null($value)) {
+        if(is_string($value)) {
             return $root->setAttribute($attr_name, $this->getAttrValue($value));
+        }
+
+        // 2. null: attribute without name
+        if(is_null($value)) {
+            return $root->setAttribute($attr_name, null);
         }
 
         if(is_bool($value)) {
@@ -147,9 +151,13 @@ class XmlConverter
         $element = new XmlElement($node_name);
 
         // 1. string: constant or property text value
-        // 2. null: self-closing element
-        if(is_string($value) || is_null($value)) {
+        if(is_string($value)) {
             $element->setText($this->getNodeValue($value));
+            return $root->addChild($element);
+        }
+
+        // 2. null: self-closing element
+        if(is_null($value)) {
             return $root->addChild($element);
         }
 
@@ -173,31 +181,29 @@ class XmlConverter
         throw new InvalidXmlFormatException("Expected string, null, boolean or array element value, $type given.");
     }
 
+    /**
+     * @param string $key
+     * @return string
+     */
     protected function getAttrValue($key)
     {
-        if (is_string($key)) {
-            if ($key[0] === self::CONST_PREFIX) {
-                // If string starts with "=" symbol
-                // then cut it and return plain string.
-                return substr($key, 1);
-            }
+        // TODO: Attribute value validation
 
-            // Get value using an object property
-            return $this->object->$key;
+        if (isset($key[0]) && $key[0] === self::CONST_PREFIX) {
+            // If string starts with "=" symbol
+            // then cut it and return plain string.
+            return substr($key, 1);
         }
 
-        return $key;
+        // Get value using an object property
+        return (string)($this->object->$key);
     }
 
     protected function getNodeValue($key)
     {
-        $value = $this->getAttrValue($key);
+        // TODO: Element value validation
 
-        if($value instanceof Xmlable) {
-            $value = (new XmlConverter($value))->asString();
-        }
-
-        return $value;
+        return $this->getAttrValue($key);
     }
 
     public function refresh()
