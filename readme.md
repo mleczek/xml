@@ -74,6 +74,13 @@ $dog = new Dog();
 $xml = $dog->toXml();
 ```
 
+The `toXml` method accepts optionally one argument ([array](#array)) which overload the [XML body](#xml-body) structure defined in the `xml` method of the `Xmlable` interface.
+
+```php
+$dog = new Dog();
+$xml = $dog->toXml(['cat']); // returns <cat/>
+```
+
 ## XML Body
 
 This chapter describe the data which should by returned by the `xml` method.
@@ -117,18 +124,42 @@ public function xml()
 }
 ```
 
-As you can see above if you define value equal `full_name` then **`XmlConverter` will look for `full_name` property in the object**.
+As you can see above if you define value equal `full_name` then **`XmlConverter` will look for `full_name` property in the object** (casted to string).
 
-You can also define more elements, self-closing elements and **constant values**:
+You can also define more elements, **self-closing elements** and **constant values**:
 
 ```php
 public function xml()
 {
-    // <dog><hau/><id>5</id></dog>
+    // <dog><hau/><hau2/><id>5</id></dog>
     return [
         'dog' => [
-            'hau',        // self-closing elements
-            'id' => '=5', // use "=" prefix for constant values
+            'hau',          // self-closing element
+            'hau2' => null, // self-closing element #2
+            'id' => '=5',   // use "=" prefix for constant values
+        ]
+    ];
+}
+```
+
+You can also **merge arrays** (without using PHP functions) and **conditional output**:
+
+```php
+public function xml()
+{
+    $extra_elements = [];
+    if($this->isSuperDog()) {
+        $extra_elements = ['hau_power' => 5];
+    }
+
+    // $this->isSuperDog():
+    // true: <dog><hau/><hau_power>5</hau_power></dog>
+    // false: <dog><hau/></dog>
+    return [
+        'dog' => [
+            'hau' => true,   // conditional rendering
+            'miau' => false, // conditional rendering #2
+            $extra_elements, // merge arrays
         ]
     ];
 }
