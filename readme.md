@@ -74,6 +74,13 @@ $dog = new Dog();
 $xml = $dog->toXml();
 ```
 
+The `toXml` method accepts optionally one argument ([array](#array)) which overload the [XML body](#xml-body) structure defined in the `xml` method of the `Xmlable` interface.
+
+```php
+$dog = new Dog();
+$xml = $dog->toXml(['cat']); // returns <cat/>
+```
+
 ## XML Body
 
 This chapter describe the data which should by returned by the `xml` method.

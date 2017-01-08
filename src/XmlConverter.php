@@ -21,9 +21,17 @@ class XmlConverter
      */
     protected $xml;
 
-    public function __construct(Xmlable $object)
+    /**
+     * XmlConverter constructor.
+     *
+     * @param Xmlable $object
+     * @param array|null $meta
+     */
+    public function __construct(Xmlable $object, array $meta = null)
     {
         $this->object = $object;
+        $this->xml = $meta;
+
         $this->refresh();
     }
 
@@ -187,8 +195,6 @@ class XmlConverter
      */
     protected function getAttrValue($key)
     {
-        // TODO: Attribute value validation
-
         if (isset($key[0]) && $key[0] === self::CONST_PREFIX) {
             // If string starts with "=" symbol
             // then cut it and return plain string.
@@ -201,14 +207,17 @@ class XmlConverter
 
     protected function getNodeValue($key)
     {
-        // TODO: Element value validation
-
         return $this->getAttrValue($key);
     }
 
     public function refresh()
     {
-        $data = $this->object->xml();
+        // Use passed in constructor xml metadata
+        // or get it from Xmlable object instance.
+        $data = $this->xml;
+        if(is_null($data)) {
+            $data = $this->object->xml();
+        }
 
         // Accept plain xml root element as string or object
         // (skip xml validation for string format).

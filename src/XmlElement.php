@@ -60,7 +60,7 @@ class XmlElement implements Xmlable
      */
     public function setName($name)
     {
-        // TODO: Name validation
+        // TODO: Validation
 
         $this->name = $name;
         return $this;
@@ -80,7 +80,7 @@ class XmlElement implements Xmlable
      */
     public function setText($text)
     {
-        // TODO: Text validation
+        // TODO: Validation
 
         $this->text = $text;
         return $this;
@@ -158,6 +158,8 @@ class XmlElement implements Xmlable
      */
     public function setAttribute($name, $value)
     {
+        // TODO: Validation
+
         if (!is_string($name)) {
             $type = typeof($name);
             throw new InvalidXmlFormatException("Attribute name must be a string, $type given.");

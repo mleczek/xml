@@ -34,4 +34,14 @@ class XmlConvertibleTest extends TestCase
 
         $this->assertEquals(XmlElement::XmlDeclaration, $declaration);
     }
+
+    public function testOverloadingXmlMeta()
+    {
+        $xmlable = new XmlableFixture();
+
+        $xml = '<cat/>';
+        $meta = ['cat'];
+
+        $this->assertEquals(XmlElement::XmlDeclaration . $xml, $xmlable->toXml($meta));
+    }
 }
