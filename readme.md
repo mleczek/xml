@@ -124,7 +124,7 @@ public function xml()
 }
 ```
 
-As you can see above if you define value equal `full_name` then **`XmlConverter` will look for `full_name` property in the object** (casted to string).
+As you can see above if you define value equal `full_name` then **`XmlConverter` will look for `full_name` property in the object** (casted to string). If property stores other object or array then you can **retrieve nested property/key using dot notation** `address.city` (equals `$this->address->city` or `$this->address['city']`).
 
 You can also define more elements, **self-closing elements** and **constant values**:
 
