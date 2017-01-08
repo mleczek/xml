@@ -147,6 +147,17 @@ class XmlConverterTestCase extends TestCase
                 '<test attr_1 attr_2/>'
             ],
 
+            'merging empty arrays' => [
+                [],
+                [
+                    'test' => [
+                        '@attr_1',
+                        [],
+                    ]
+                ],
+                '<test attr_1/>'
+            ],
+
             'boolean value' => [
                 [],
                 [
