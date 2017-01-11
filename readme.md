@@ -24,42 +24,53 @@ composer require mleczek/xml
 
 ## Basic concepts
 
-Classes that are convertible to XML must implement the `Mleczek\Xml\Xmlable` interface with `xml` method:
-
-```php
-use Mleczek\Xml\Xmlable;
-
-class Dog implements Xmlable
-{
-    public function xml()
-    {
-        // XML Body...
-    }
-}
-```
-
-The [XML body](#xml-body) will be described in the next chapter.
-
 Class may be converted to XML using `Mleczek\Xml\XmlConverter` which implements the `__toString`, `outerXml` and `innerXml` methods returning XML as string:
 
 ```php
 $dog = new Dog();
 $converter = new XmlConverter($dog);
-$xml = (string)$converter;
-// $xml = $converter->outerXml(); // equals __toString
-// $xml = $converter->innerXml();
+$outerXml = (string)$converter;
+$outerXml = $converter->outerXml(); // equals __toString
+$innerXml = $converter->innerXml();
 ```
 
-Library contains also the shorthand to cast `Mleczek\Xml\Xmlable` class to XML string using `Mleczek\Xml\XmlConvertible` trait:
+Library contains also the shorthand to cast objects to XML string using `Mleczek\Xml\XmlConvertible` trait (or helper functions):
 
 ```php
 use Mleczek\Xml\Xmlable;
 use Mleczek\Xml\XmlConvertible;
 
-class Dog implements Xmlable
+class Dog
 {
     use XmlConvertible;
+    
+    public $id = 5;
+}
+```
 
+`Mleczek\Xml\XmlConvertible` implements the `toXml` method (also available as a helper function) which returns the outer XML string:
+
+```php
+$dog = new Dog();
+$xml = $dog->toXml(); // returns <result><id>5</id></result>
+$xml = toXml($dog);   // without using XmlConvertible trait
+```
+
+By default root elements is `<result>`, you can change it calling `toXmlAs` method:
+
+```php
+$dog = new Dog();
+$xml = $dog->toXmlAs('dog'); // returns <dog><id>5</id></dog>
+$xml = toXmlAs($dog, 'dog'); // without using XmlConvertible trait
+```
+
+Above examples use `Mleczek\Xml\StructureAnalyser` class to determine the output XML structure, to get more control you can implement the `Mleczek\Xml\Xmlable` interface with `xml` method:
+
+```php
+use Mleczek\Xml\Xmlable;
+
+class Dog implements Xmlable
+{
     public function xml()
     {
         // XML Body...
@@ -67,14 +78,7 @@ class Dog implements Xmlable
 }
 ```
 
-`Mleczek\Xml\XmlConvertible` implements the `toXml` method which returns the outer XML string:
-
-```php
-$dog = new Dog();
-$xml = $dog->toXml();
-```
-
-The `toXml` method accepts optionally one argument ([array](#array)) which overload the [XML body](#xml-body) structure defined in the `xml` method of the `Xmlable` interface.
+The [XML body](#xml-body) describes the ouput XML and will be described in the next chapter. Also The `toXml` method accepts optionally one argument ([array](#array)) which can be used to control the [XML body](#xml-body) structure:
 
 ```php
 $dog = new Dog();
@@ -93,7 +97,7 @@ XML Body can be implemented using 3 ways:
 
 ### Array
 
-The meta language allow defining XML body, including:
+The meta language which allow defining XML body, including:
 
 - [Elements](#elements)
 - [Attributes](#attributes)
@@ -124,7 +128,7 @@ public function xml()
 }
 ```
 
-As you can see above if you define value equal `full_name` then **`XmlConverter` will look for `full_name` property in the object** (casted to string).
+As you can see above if you define value equal `full_name` then **`XmlConverter` will look for `full_name` property in the object** (casted to string). If property stores other object or array then you can **retrieve nested property/key using dot notation** `address.city` (equals `$this->address->city` or `$this->address['city']`).
 
 You can also define more elements, **self-closing elements** and **constant values**:
 

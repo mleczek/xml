@@ -5,14 +5,22 @@ namespace Mleczek\Xml;
 
 
 use Mleczek\Xml\Exceptions\InvalidXmlFormatException;
+use Mleczek\Xml\Exceptions\MissingXmlFormatException;
 
+/**
+ * Convert object/array to XML using custom array description.
+ * Objects implementing Xmlable interface provide own XML body structure description.
+ *
+ * @package Mleczek\Xml
+ * @see https://github.com/mleczek/xml#xml-body
+ */
 class XmlConverter
 {
     const ATTR_PREFIX = '@';
     const CONST_PREFIX = '=';
 
     /**
-     * @var Xmlable
+     * @var Xmlable|object|array
      */
     protected $object;
 
@@ -24,11 +32,17 @@ class XmlConverter
     /**
      * XmlConverter constructor.
      *
-     * @param Xmlable $object
+     * @param Xmlable|object|array $object
      * @param array|null $meta
+     * @throws MissingXmlFormatException
      */
-    public function __construct(Xmlable $object, array $meta = null)
+    public function __construct($object, array $meta = null)
     {
+        if(!($object instanceof Xmlable) && is_null($meta)) {
+            $xmlable = Xmlable::class;
+            throw new MissingXmlFormatException("XmlConverter require second argument to be xml array format if first argument doesn't implement the $xmlable interface.");
+        }
+
         $this->object = $object;
         $this->xml = $meta;
 
@@ -77,12 +91,12 @@ class XmlConverter
     protected function buildFor(XmlElement $root, $key, $value)
     {
         // 1. array: continue building using extended metadata (merge array)
-        if(is_array($key)) {
+        if (is_array($key)) {
             return $this->build($root, $key);
         }
 
         // 2. string: attribute or element name
-        if(is_string($key)) {
+        if (is_string($key)) {
             if ($key[0] === self::ATTR_PREFIX) {
                 $attr_name = substr($key, 1);
                 return $this->buildAttrFor($root, $attr_name, $value);
@@ -92,7 +106,7 @@ class XmlConverter
         }
 
         // 3. Xmlable: same as XmlElement
-        if($key instanceof Xmlable) {
+        if ($key instanceof Xmlable) {
             $element = new XmlConverter($key);
             return $root->setText($root->getText() . $element->asString());
         }
@@ -117,18 +131,18 @@ class XmlConverter
     protected function buildAttrFor(XmlElement $root, $attr_name, $value)
     {
         // 1. string: constant or property value
-        if(is_string($value)) {
-            return $root->setAttribute($attr_name, $this->getAttrValue($value));
+        if (is_string($value)) {
+            return $root->setAttribute($attr_name, $this->getValue($value));
         }
 
         // 2. null: attribute without name
-        if(is_null($value)) {
+        if (is_null($value)) {
             return $root->setAttribute($attr_name, null);
         }
 
-        if(is_bool($value)) {
+        if (is_bool($value)) {
             // 3. boolean (true): same as null
-            if($value) {
+            if ($value) {
                 return $root->setAttribute($attr_name, null);
             }
 
@@ -159,19 +173,19 @@ class XmlConverter
         $element = new XmlElement($node_name);
 
         // 1. string: constant or property text value
-        if(is_string($value)) {
-            $element->setText($this->getNodeValue($value));
+        if (is_string($value)) {
+            $element->setText($this->getValue($value));
             return $root->addChild($element);
         }
 
         // 2. null: self-closing element
-        if(is_null($value)) {
+        if (is_null($value)) {
             return $root->addChild($element);
         }
 
-        if(is_bool($value)) {
+        if (is_bool($value)) {
             // 3. boolean (true): same as null
-            if($value) {
+            if ($value) {
                 return $root->addChild($element);
             }
 
@@ -180,7 +194,7 @@ class XmlConverter
         }
 
         // 5. array: build nested element
-        if(is_array($value)) {
+        if (is_array($value)) {
             $this->build($element, $value);
             return $root->addChild($element);
         }
@@ -190,10 +204,12 @@ class XmlConverter
     }
 
     /**
+     * Get value for node or attribute.
+     *
      * @param string $key
      * @return string
      */
-    protected function getAttrValue($key)
+    protected function getValue($key)
     {
         if (isset($key[0]) && $key[0] === self::CONST_PREFIX) {
             // If string starts with "=" symbol
@@ -201,13 +217,17 @@ class XmlConverter
             return substr($key, 1);
         }
 
-        // Get value using an object property
-        return (string)($this->object->$key);
-    }
+        // Get value using a dot notation
+        $data = $this->object;
+        foreach (explode('.', $key) as $step) {
+            if (is_array($data)) {
+                $data = $data[$step];
+            } else {
+                $data = $data->$step;
+            }
+        }
 
-    protected function getNodeValue($key)
-    {
-        return $this->getAttrValue($key);
+        return (string)$data;
     }
 
     public function refresh()
@@ -215,7 +235,7 @@ class XmlConverter
         // Use passed in constructor xml metadata
         // or get it from Xmlable object instance.
         $data = $this->xml;
-        if(is_null($data)) {
+        if (is_null($data)) {
             $data = $this->object->xml();
         }
 

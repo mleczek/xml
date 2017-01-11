@@ -5,6 +5,7 @@ namespace Mleczek\Xml\Tests;
 
 
 use Mleczek\Xml\Exceptions\InvalidXmlFormatException;
+use Mleczek\Xml\Exceptions\MissingXmlFormatException;
 use Mleczek\Xml\Xmlable;
 use Mleczek\Xml\XmlConverter;
 use Mleczek\Xml\XmlElement;
@@ -170,6 +171,20 @@ class XmlConverterTestCase extends TestCase
                 ],
                 '<test yes><yes/></test>'
             ],
+
+            'dot notation' => [
+                [
+                    'dot' => (object)[
+                        'notation' => [
+                            'example' => 'foo',
+                        ]
+                    ]
+                ],
+                [
+                   'test' => 'dot.notation.example',
+                ],
+                '<test>foo</test>',
+            ],
         ];
     }
 
@@ -221,11 +236,20 @@ class XmlConverterTestCase extends TestCase
         $xmlable = $this->createMock(Xmlable::class);
         $xmlable->method('xml')->willReturn($xml);
 
-        foreach ($properties as $name => $value) {
+        // Bind properties to xmlable mock
+        foreach($properties as $name => $value) {
             $xmlable->{$name} = $value;
+        }
+
+        // Replace all {prop_name} occurs in expected string
+        // with an appropriate property value with specified name.
+        preg_match_all('/\{([^\}]+)\}/', $expected, $matches);
+        foreach ($matches[1] as $name) {
+            $value = $properties[$name];
             $expected = str_replace('{' . $name . '}', $value, $expected);
         }
 
+        // Compare result with expected string
         $converter = new XmlConverter($xmlable);
         $this->assertEquals($expected, (string)$converter);
     }
@@ -238,11 +262,12 @@ class XmlConverterTestCase extends TestCase
         $xmlable = $this->createMock(Xmlable::class);
         $xmlable->method('xml')->willReturn($xml);
 
-        foreach ($properties as $name => $value) {
+        // Bind properties to xmlable mock
+        foreach($properties as $name => $value) {
             $xmlable->{$name} = $value;
-            $expected = str_replace('{' . $name . '}', $value, $expected);
         }
 
+        // Compare result with expected string
         $this->expectException($exception);
         $converter = new XmlConverter($xmlable);
     }
@@ -254,5 +279,31 @@ class XmlConverterTestCase extends TestCase
 
         $this->expectException(InvalidXmlFormatException::class);
         new XmlConverter($xmlable);
+    }
+
+    public function testObjectToXml()
+    {
+        $meta = ['dog' => ['@name' => 'name']];
+        $object = (object)['name' => 'Gapa'];
+        $expected = '<dog name="Gapa"/>';
+
+        $converter = new XmlConverter($object, $meta);
+        $this->assertEquals($expected, (string)$converter);
+    }
+
+    public function testArrayToXml()
+    {
+        $meta = ['dog' => ['@name' => 'name']];
+        $object = ['name' => 'Gapa'];
+        $expected = '<dog name="Gapa"/>';
+
+        $converter = new XmlConverter($object, $meta);
+        $this->assertEquals($expected, (string)$converter);
+    }
+
+    public function testMissingXmlFormat()
+    {
+        $this->expectException(MissingXmlFormatException::class);
+        new XmlConverter([]);
     }
 }
