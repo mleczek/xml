@@ -8,6 +8,11 @@ trait XmlConvertible
 {
     public function toXml(array $meta = null)
     {
-        return XmlElement::XmlDeclaration . (string)(new XmlConverter($this, $meta));
+        return toXml($this, $meta);
+    }
+
+    public function toXmlAs($root_name)
+    {
+        return toXmlAs($this, $root_name);
     }
 }

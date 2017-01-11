@@ -9,21 +9,11 @@ use Mleczek\Xml\XmlConvertible;
 use Mleczek\Xml\XmlElement;
 use PHPUnit\Framework\TestCase;
 
-class XmlableFixture implements Xmlable
-{
-    use XmlConvertible;
-
-    public function xml()
-    {
-        return '<dog/>';
-    }
-}
-
 class XmlConvertibleTest extends TestCase
 {
     public function testXmlableWithStringXml()
     {
-        $xmlable = new XmlableFixture();
+        $xmlable = new Fixtures\XmlableFixture();
 
         $this->assertEquals(XmlElement::XmlDeclaration . $xmlable->xml(), $xmlable->toXml());
     }
@@ -37,11 +27,28 @@ class XmlConvertibleTest extends TestCase
 
     public function testOverloadingXmlMeta()
     {
-        $xmlable = new XmlableFixture();
+        $xmlable = new Fixtures\XmlableFixture();
 
         $xml = '<cat/>';
         $meta = ['cat'];
 
         $this->assertEquals(XmlElement::XmlDeclaration . $xml, $xmlable->toXml($meta));
+    }
+
+    public function testToXmlWithoutXmlableClass()
+    {
+        $obj = new Fixtures\NotXmlableFixture();
+        $xml = '<result><prop>val</prop></result>';
+
+        $this->assertEquals(XmlElement::XmlDeclaration . $xml, $obj->toXml());
+    }
+
+    public function testToXmlAs()
+    {
+        $obj = new Fixtures\NotXmlableFixture();
+        $root = 'data';
+        $xml = "<$root><prop>val</prop></$root>";
+
+        $this->assertEquals(XmlElement::XmlDeclaration . $xml, $obj->toXmlAs($root));
     }
 }

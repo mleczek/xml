@@ -7,6 +7,13 @@ namespace Mleczek\Xml;
 use Mleczek\Xml\Exceptions\InvalidXmlFormatException;
 use Mleczek\Xml\Exceptions\MissingXmlFormatException;
 
+/**
+ * Convert object/array to XML using custom array description.
+ * Objects implementing Xmlable interface provide own XML body structure description.
+ *
+ * @package Mleczek\Xml
+ * @see https://github.com/mleczek/xml#xml-body
+ */
 class XmlConverter
 {
     const ATTR_PREFIX = '@';
@@ -216,7 +223,6 @@ class XmlConverter
             if (is_array($data)) {
                 $data = $data[$step];
             } else {
-                var_dump($step);
                 $data = $data->$step;
             }
         }
