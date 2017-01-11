@@ -48,7 +48,7 @@ class Dog
 }
 ```
 
-`Mleczek\Xml\XmlConvertible` implements the `toXml` method (also available as a helper function) which returns the outer XML string:
+`Mleczek\Xml\XmlConvertible` implements the `toXml` method (also available as a helper function) which returns the outer XML string (skipped `<?xml version="1.0" encoding="UTF-8"?>` part in examples for better readability):
 
 ```php
 $dog = new Dog();
@@ -78,7 +78,7 @@ class Dog implements Xmlable
 }
 ```
 
-The [XML body](#xml-body) describes the ouput XML and will be described in the next chapter. Also The `toXml` method accepts optionally one argument ([array](#array)) which can be used to control the [XML body](#xml-body) structure:
+The [XML body](#xml-body) describes the ouput XML and will be described in the next chapter. Also the `toXml` method accepts optionally one argument ([array](#array)) which can be used to control the [XML body](#xml-body) structure:
 
 ```php
 $dog = new Dog();
@@ -224,7 +224,7 @@ class Dog implements Xmlable
 
 ## XML Declaration
 
-Using `toXml` method provided with `Mleczek\Xml\XmlConvertible` trait automatically add XML declaration:
+Using `toXml` method provided with `Mleczek\Xml\XmlConvertible` trait (or equivalent helper functions) automatically add XML declaration:
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
