@@ -51,6 +51,11 @@ class StructureAnalyserTest extends TestCase
                 '<result><key1/></result>'
             ],
 
+            'array of arrays' => [
+                [['a'], ['b']],
+                '<result><result><a/></result><result><b/></result></result>'
+            ],
+
             'skip invalid keys' => [
                 [0, 1 => null, 'test'],
                 '<result><test/></result>'
