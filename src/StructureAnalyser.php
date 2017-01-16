@@ -15,6 +15,9 @@ class StructureAnalyser
     const ROOT_NAME = 'result';
 
     /**
+     * Get object's xml meta description in array format
+     * (see docs for array format of Mleczek\Xml\Xmlable::xml method).
+     *
      * @param array|object $data
      * @param string $root_name
      * @return array
@@ -24,10 +27,15 @@ class StructureAnalyser
         return $this->parse($data, $root_name);
     }
 
+    /**
+     * @param array|object $data
+     * @param string $root_name
+     * @param string $prefix
+     * @return array
+     */
     protected function parse($data, $root_name, $prefix = '')
     {
         $xml_lang = [];
-
         foreach ($data as $key => $value) {
             $xml_lang[] = $this->parseKeyValue($key, $value, $prefix);
         }
@@ -35,6 +43,12 @@ class StructureAnalyser
         return [$root_name => $xml_lang];
     }
 
+    /**
+     * @param mixed $key
+     * @param mixed $value
+     * @param string $prefix
+     * @return array
+     */
     private function parseKeyValue($key, $value, $prefix = '')
     {
         // Array inside array ([[...], [...], ...])

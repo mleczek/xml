@@ -231,6 +231,11 @@ class XmlConverter
         return (string)$data;
     }
 
+    /**
+     * Rerun converter for previously specified object/array.
+     *
+     * @throws InvalidXmlFormatException
+     */
     public function refresh()
     {
         // Use passed in constructor xml metadata
@@ -259,11 +264,21 @@ class XmlConverter
         $this->xml = $this->build($root, $data)->innerXml();
     }
 
+    /**
+     * Get outer xml.
+     *
+     * @return string
+     */
     public function asString()
     {
         return (string)($this->xml);
     }
 
+    /**
+     * Get outer xml.
+     *
+     * @return string
+     */
     public function __toString()
     {
         return $this->asString();

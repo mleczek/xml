@@ -7,6 +7,8 @@ use Mleczek\Xml\XmlElement;
 
 if (!function_exists('toXml')) {
     /**
+     * Convert object to XML.
+     *
      * @param Xmlable|object|array $object
      * @param array|null $meta
      * @return string
@@ -21,16 +23,14 @@ if (!function_exists('toXml')) {
     }
 
     /**
+     * Dynamic converts object to XML.
+     *
      * @param object|array $object
      * @param string $root_name
      * @return string
      */
     function toXmlAs($object, $root_name)
     {
-        if($object instanceof Xmlable) {
-            throw new InvalidArgumentException("For objects implementing the Xmlable interface use toXml method.");
-        }
-
         $meta = (new StructureAnalyser())->analyse($object, $root_name);
         return XmlElement::XmlDeclaration . (string)(new XmlConverter($object, $meta));
     }
