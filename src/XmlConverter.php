@@ -6,6 +6,7 @@ namespace Mleczek\Xml;
 
 use Mleczek\Xml\Exceptions\InvalidXmlFormatException;
 use Mleczek\Xml\Exceptions\MissingXmlFormatException;
+use Traversable;
 
 /**
  * Convert object/array to XML using custom array description.
@@ -53,7 +54,7 @@ class XmlConverter
      * Build record for each $meta row ([$key => $value]).
      *
      * @param XmlElement $root
-     * @param $meta
+     * @param array|Traversable $meta
      * @return XmlElement
      */
     protected function build(XmlElement $root, $meta)
@@ -78,7 +79,7 @@ class XmlConverter
 
     /**
      * If $key is:
-     * 1. array: continue building using extended metadata (merge array)
+     * 1. array|Traversable: continue building using extended metadata (merge array)
      * 2. string: attribute or element name
      * 3. Xmlable: convert to xml text value
      *
@@ -91,7 +92,7 @@ class XmlConverter
     protected function buildFor(XmlElement $root, $key, $value)
     {
         // 1. array: continue building using extended metadata (merge array)
-        if (is_array($key)) {
+        if (is_array($key) || $key instanceof Traversable) {
             return $this->build($root, $key);
         }
 
@@ -160,7 +161,7 @@ class XmlConverter
      * 2. null: self-closing element
      * 3. boolean (true): same as null
      * 4. boolean (false): skip element
-     * 5. array: build nested element
+     * 5. array/Traversable: build nested element
      *
      * @param XmlElement $root
      * @param string $node_name
@@ -194,7 +195,7 @@ class XmlConverter
         }
 
         // 5. array: build nested element
-        if (is_array($value)) {
+        if (is_array($value) || $value instanceof Traversable) {
             $this->build($element, $value);
             return $root->addChild($element);
         }
@@ -230,6 +231,11 @@ class XmlConverter
         return (string)$data;
     }
 
+    /**
+     * Rerun converter for previously specified object/array.
+     *
+     * @throws InvalidXmlFormatException
+     */
     public function refresh()
     {
         // Use passed in constructor xml metadata
@@ -258,11 +264,21 @@ class XmlConverter
         $this->xml = $this->build($root, $data)->innerXml();
     }
 
+    /**
+     * Get outer xml.
+     *
+     * @return string
+     */
     public function asString()
     {
         return (string)($this->xml);
     }
 
+    /**
+     * Get outer xml.
+     *
+     * @return string
+     */
     public function __toString()
     {
         return $this->asString();

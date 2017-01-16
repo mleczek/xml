@@ -1,7 +1,7 @@
 # Convert PHP objects to XML
 
 [![Build Status](https://travis-ci.org/mleczek/xml.svg)](https://travis-ci.org/mleczek/xml)
-[![Latest Unstable Version](https://poser.pugx.org/mleczek/xml/v/stable)](https://packagist.org/packages/mleczek/xml)
+[![Latest Stable Version](https://poser.pugx.org/mleczek/xml/v/stable)](https://packagist.org/packages/mleczek/xml)
 [![License](https://poser.pugx.org/mleczek/xml/license)](https://packagist.org/packages/mleczek/xml)
 
 The goal of the this library is to provide an easy way to respond XML by REST API.
@@ -150,7 +150,7 @@ public function xml()
 }
 ```
 
-You can also **merge arrays** (without using PHP functions) and **conditional output**:
+You can also **merge arrays** (without using PHP functions) and use **conditional output**:
 
 ```php
 public function xml()
@@ -165,8 +165,8 @@ public function xml()
     // false: <dog><hau/></dog>
     return [
         'dog' => [
-            'hau' => true,   // conditional rendering
-            'miau' => false, // conditional rendering #2
+            'hau' => true,   // true -> self-closing element
+            'miau' => false, // false -> skip element
             $extra_elements, // merge arrays
         ]
     ];

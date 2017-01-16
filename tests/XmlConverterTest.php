@@ -6,6 +6,7 @@ namespace Mleczek\Xml\Tests;
 
 use Mleczek\Xml\Exceptions\InvalidXmlFormatException;
 use Mleczek\Xml\Exceptions\MissingXmlFormatException;
+use Mleczek\Xml\Tests\Fixtures\TraversableFixture;
 use Mleczek\Xml\Xmlable;
 use Mleczek\Xml\XmlConverter;
 use Mleczek\Xml\XmlElement;
@@ -185,6 +186,14 @@ class XmlConverterTestCase extends TestCase
                 ],
                 '<test>foo</test>',
             ],
+
+            'traversable' => [
+                [],
+                [
+                    'test' => new TraversableFixture(),
+                ],
+                '<test><first/><second/></test>',
+            ]
         ];
     }
 

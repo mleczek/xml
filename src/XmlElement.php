@@ -86,12 +86,18 @@ class XmlElement implements Xmlable
         return $this;
     }
 
+    /**
+     * @return XmlElement[]
+     */
     public function getChildren()
     {
         return $this->children;
     }
 
     /**
+     * Add child element
+     * (at random position).
+     *
      * @param XmlElement $node
      * @return $this
      */
@@ -179,6 +185,11 @@ class XmlElement implements Xmlable
         return $this;
     }
 
+    /**
+     * Get xml without root element.
+     *
+     * @return string
+     */
     public function innerXml()
     {
         $children = '';
@@ -189,6 +200,11 @@ class XmlElement implements Xmlable
         return $this->getText() . $children;
     }
 
+    /**
+     * Get xml with root element.
+     *
+     * @return string
+     */
     public function outerXml()
     {
         $attributes = '';
@@ -212,11 +228,22 @@ class XmlElement implements Xmlable
         return "<{$this->getName()}$attributes>{$this->innerXml()}</{$this->getName()}>";
     }
 
+    /**
+     * Get outer xml string
+     * (alias for outerXml).
+     *
+     * @return string
+     */
     public function xml()
     {
         return $this->outerXml();
     }
 
+    /**
+     * Get outer xml string.
+     *
+     * @return string
+     */
     public function __toString()
     {
         return $this->outerXml();
