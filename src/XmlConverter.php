@@ -158,7 +158,8 @@ class XmlConverter
     /**
      * If $value is:
      * 1. string: constant or property text value
-     * 2. null: self-closing element
+     * 2a. null: raw xml string
+     * 2b. null: self-closing element
      * 3. boolean (true): same as null
      * 4. boolean (false): skip element
      * 5. array/Traversable: build nested element
@@ -179,8 +180,13 @@ class XmlConverter
             return $root->addChild($element);
         }
 
-        // 2. null: self-closing element
         if (is_null($value)) {
+            // 2a. null: raw xml string
+            if(isset($node_name[0]) && $node_name[0] == self::CONST_PREFIX) {
+                return $root->setText($root->getText() . substr($node_name, 1));
+            }
+
+            // 2b. null: self-closing element
             return $root->addChild($element);
         }
 

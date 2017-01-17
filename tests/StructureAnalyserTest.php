@@ -5,6 +5,7 @@ namespace Mleczek\Xml\Tests;
 
 
 use Mleczek\Xml\StructureAnalyser;
+use Mleczek\Xml\Xmlable;
 use Mleczek\Xml\XmlConverter;
 use PHPUnit\Framework\TestCase;
 
@@ -60,6 +61,20 @@ class StructureAnalyserTest extends TestCase
                 [0, 1 => null, 'test'],
                 '<result><test/></result>'
             ],
+
+            'array of Xmlable' => [
+                [
+                    \Mockery::mock(Xmlable::class)
+                        ->shouldReceive('xml')
+                        ->andReturn('<mock/>')
+                        ->getMock(),
+                    'test' => \Mockery::mock(Xmlable::class)
+                        ->shouldReceive('xml')
+                        ->andReturn('<mock2/>')
+                        ->getMock()
+                ],
+                '<result><mock/><test><mock2/></test></result>',
+            ]
         ];
     }
 

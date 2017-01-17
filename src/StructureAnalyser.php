@@ -51,21 +51,27 @@ class StructureAnalyser
      */
     private function parseKeyValue($key, $value, $prefix = '')
     {
+        // Nested elements of Xmlable interfaces
+        if ($value instanceof Xmlable) {
+            $inner_xml = '=' . toXml($value, null, false);
+            return is_string($key) ? [$key => $inner_xml] : [$inner_xml];
+        }
+
         // Array inside array ([[...], [...], ...])
         // and nested elements (array or object).
-        if(is_array($value) || is_object($value)) {
+        if (is_array($value) || is_object($value)) {
             $root_name = is_string($key) ? $key : self::ROOT_NAME;
             return $this->parse($value, $root_name, "$prefix$key.");
         }
 
         // Support self-closing elements
-        if(is_int($key)) {
+        if (is_int($key)) {
             $key = $value;
             $value = null;
         }
 
         // Skip parsing
-        if(!is_string($key)) {
+        if (!is_string($key)) {
             return [];
         }
 
