@@ -1,7 +1,8 @@
 # Convert PHP objects to XML
 
-[![Build Status](https://travis-ci.org/mleczek/xml.svg)](https://travis-ci.org/mleczek/xml)
 [![Latest Stable Version](https://poser.pugx.org/mleczek/xml/v/stable)](https://packagist.org/packages/mleczek/xml)
+[![Build Status](https://travis-ci.org/mleczek/xml.svg)](https://travis-ci.org/mleczek/xml)
+[![Coverage Status](https://coveralls.io/repos/github/mleczek/xml/badge.svg?branch=1.0)](https://coveralls.io/github/mleczek/xml?branch=1.0)
 [![License](https://poser.pugx.org/mleczek/xml/license)](https://packagist.org/packages/mleczek/xml)
 
 The goal of the this library is to provide an easy way to respond XML by REST API.
