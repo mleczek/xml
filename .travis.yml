@@ -5,6 +5,14 @@ php:
   - 7.0
   - 7.1
 
-install: composer install --no-interaction --no-suggest
+before_install:
+  - composer require satooshi/php-coveralls
 
-script: vendor/bin/phpunit --verbose
+install:
+  - composer install --no-interaction --no-suggest
+
+script:
+  - vendor/bin/phpunit --coverage-clover ./tests/logs/clover.xml --verbose
+
+after_script:
+  - php vendor/bin/coveralls -v

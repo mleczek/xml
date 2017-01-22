@@ -11,15 +11,21 @@ if (!function_exists('toXml')) {
      *
      * @param Xmlable|object|array $object
      * @param array|null $meta
+     * @param boolean $xml_declaration
      * @return string
      */
-    function toXml($object, array $meta = null)
+    function toXml($object, array $meta = null, $xml_declaration = true)
     {
         if (!($object instanceof Xmlable) && is_null($meta)) {
             $meta = (new StructureAnalyser())->analyse($object);
         }
 
-        return XmlElement::XmlDeclaration . (string)(new XmlConverter($object, $meta));
+        $converter = new XmlConverter($object, $meta);
+        if($xml_declaration) {
+            return XmlElement::XmlDeclaration . $converter->asString();
+        }
+
+        return $converter->asString();
     }
 
     /**
@@ -27,11 +33,13 @@ if (!function_exists('toXml')) {
      *
      * @param object|array $object
      * @param string $root_name
+     * @param boolean $xml_declaration
      * @return string
      */
-    function toXmlAs($object, $root_name)
+    function toXmlAs($object, $root_name, $xml_declaration = true)
     {
         $meta = (new StructureAnalyser())->analyse($object, $root_name);
-        return XmlElement::XmlDeclaration . (string)(new XmlConverter($object, $meta));
+
+        return toXml($object, $meta, $xml_declaration);
     }
 }

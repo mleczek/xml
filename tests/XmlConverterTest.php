@@ -149,6 +149,12 @@ class XmlConverterTestCase extends TestCase
                 '<test attr_1 attr_2/>'
             ],
 
+            'merging raw xml' => [
+                [],
+                ['=<test/>'],
+                '<test/>'
+            ],
+
             'merging empty arrays' => [
                 [],
                 [
